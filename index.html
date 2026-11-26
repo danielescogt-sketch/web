@@ -1294,27 +1294,44 @@ document.querySelectorAll('.slider').forEach(sl => {
 });
 
 /* Form */
-function handleSubmit(e){
+
+function handleSubmit(e) {
   e.preventDefault();
 
-emailjs.send("service_0dupxpq", "template_uicl1tv", {
-  from_name: document.querySelector('input[name="from_name"]').value,
-  email: document.querySelector('input[name="email"]').value,
-  message: document.querySelector('textarea[name="message"]').value
-}).then(() => {
   const btn = e.target.querySelector('button');
-  btn.textContent = '✓ Sent!';
-  btn.style.background = '#22c55e';
 
-  setTimeout(() => {
-    btn.textContent = 'Send Message ↗';
-    btn.style.background = '';
-  }, 3000);
+  btn.disabled = true;
+  btn.textContent = "Sending...";
 
-}, () => {
-  alert("Error al enviar ❌");
-});
+  emailjs.send("service_0dupxpq", "template_uicl1tv", {
+    from_name: e.target.from_name.value,
+    email: e.target.email.value,
+    message: e.target.message.value
+  })
+  .then((response) => {
+    console.log("SUCCESS:", response);
+
+    btn.textContent = "✓ Sent!";
+    btn.style.background = "#22c55e";
+
+    e.target.reset();
+
+    setTimeout(() => {
+      btn.textContent = "Send Message ↗";
+      btn.style.background = "";
+      btn.disabled = false;
+    }, 3000);
+  })
+  .catch((error) => {
+    console.error("EMAILJS ERROR:", error);
+
+    alert("Error: " + (error.text || error.message || JSON.stringify(error)));
+
+    btn.textContent = "Send Message ↗";
+    btn.disabled = false;
+  });
 }
+
 </script>
 <script>
 let counted = false;
